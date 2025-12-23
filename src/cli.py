@@ -8,7 +8,7 @@ from sympy.parsing.sympy_parser import (
     standard_transformations,
 )
 
-from src.golden_section import golden_section_search
+from src.golden_section import golden_section_root
 from src import functions
 
 _X = Symbol("x")
@@ -96,37 +96,34 @@ def choose_function() -> Callable[[float], float]:
             print("Ошибка: некорректный выбор.")
 
 
-def choose_mode() -> bool:
-    while True:
-        mode = input("Искать минимум или максимум? [min/max]: ").strip().lower()
-        if mode == "min":
-            return True
-        if mode == "max":
-            return False
-        print("Введите 'min' или 'max'.")
-
-
 def main() -> None:
-    print("Метод золотого сечения")
-    print("----------------------")
+    print("Метод золотого сечения для решения уравнения")
+    print("-------------------------------------------")
 
     f = choose_function()
-    a = read_float("Введите левую границу a: ")
-    b = read_float("Введите правую границу b: ")
-    eps = read_float("Введите точность eps [по умолчанию 1e-6]: ", default=1e-6)
-    find_min = choose_mode()
+    eps_x = read_float("Введите точность по x [по умолчанию 1e-6]: ", default=1e-6)
 
-    x = golden_section_search(
-        f=f,
-        a=a,
-        b=b,
-        eps=eps,
-        find_min=find_min,
-    )
+    while True:
+        a = read_float("Введите левую границу a: ")
+        b = read_float("Введите правую границу b: ")
+        try:
+            x, iterations = golden_section_root(
+                f=f,
+                a=a,
+                b=b,
+                eps_x=eps_x,
+            )
+            break
+        except ValueError as exc:
+            print(f"Ошибка: {exc}. Попробуйте другой интервал.")
+        except RuntimeError as exc:
+            print(f"Ошибка: {exc}.")
+            return
 
     print("\nРезультат:")
     print(f"x* = {x}")
     print(f"f(x*) = {f(x)}")
+    print(f"Итераций: {iterations}")
 
 
 if __name__ == "__main__":

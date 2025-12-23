@@ -1,62 +1,51 @@
 import math
-from src.golden_section import golden_section_search
 
-def test_quadratic_minimum():
-    f = lambda x: (x - 2) ** 2
+import pytest
 
-    x = golden_section_search(
+from src.golden_section import golden_section_root
+
+
+def test_linear_root():
+    f = lambda x: x - 2
+
+    x, _ = golden_section_root(
         f=f,
         a=0,
         b=5,
-        eps=1e-6,
-        find_min=True
+        eps_x=1e-6,
     )
 
     assert math.isclose(x, 2.0, abs_tol=1e-5)
 
-def test_quadratic_maximum():
-    f = lambda x: -(x - 1) ** 2
 
-    x = golden_section_search(
+def test_root_at_boundary():
+    f = lambda x: x
+
+    x, _ = golden_section_root(
         f=f,
-        a=-5,
+        a=0,
         b=5,
-        find_min=False
+        eps_x=1e-6,
     )
 
-    assert math.isclose(x, 1.0, abs_tol=1e-5)
+    assert x == 0
 
-def test_result_inside_interval():
-    f = lambda x: x ** 2
-    a, b = -10, 3
 
-    x = golden_section_search(f, a, b)
+def test_invalid_interval_raises():
+    f = lambda x: x**2 + 1
 
-    assert a <= x <= b
+    with pytest.raises(ValueError):
+        golden_section_root(f, -1, 1)
 
-def test_minimum_lower_than_edges():
-    f = lambda x: (x - 3) ** 2
-    a, b = 0, 10
 
-    x = golden_section_search(f, a, b)
+def test_cos_minus_x():
+    f = lambda x: math.cos(x) - x
 
-    assert f(x) <= f(a)
-    assert f(x) <= f(b)
+    x, _ = golden_section_root(
+        f=f,
+        a=0,
+        b=1,
+        eps_x=1e-6,
+    )
 
-def test_polynomial_from_methodical():
-    f = lambda x: x**4 - 12*x**3 + 23*x**2 - 4*x + 12
-    a, b = 0, 5
-
-    x = golden_section_search(f, a, b)
-
-    assert a <= x <= b
-    assert f(x) <= min(f(a), f(b)) + 1e-4
-
-def test_precision_affects_result():
-    f = lambda x: (x - 1.5) ** 2
-
-    x1 = golden_section_search(f, 0, 5, eps=1e-3)
-    x2 = golden_section_search(f, 0, 5, eps=1e-7)
-
-    assert abs(x1 - x2) < 1e-2
-
+    assert math.isclose(x, 0.739085, abs_tol=1e-5)
