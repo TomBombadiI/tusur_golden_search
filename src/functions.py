@@ -26,10 +26,27 @@ def f5(x: float) -> float:
     """e^(-x) * cos(pi * x)"""
     return math.exp(-x) * math.cos(math.pi * x)
 
+def f6(x: float) -> float:
+    """(x - 2)^2"""
+    return (x - 2) ** 2
+
+
+def f7(x: float) -> float:
+    """-(x - 1)^2"""
+    return -((x - 1) ** 2)
+
+
+def f8(x: float) -> float:
+    """x^2"""
+    return x ** 2
+
 FUNCTIONS: dict[int, tuple[str, Callable[[float], float]]] = {
     1: ("x^4 - 12x^3 + 23x^2 - 4x + 12", f1),
     2: ("(x^3 - 5x) / (6x + 120)", f2),
     3: ("x^2 - 3x - 8sin(2x) - 2", f3),
     4: ("x^3 - 12sin(3x) + 5", f4),
     5: ("e^(-x) * cos(pi x)", f5),
+    6: ("(x - 2)^2", f6),
+    7: ("-(x - 1)^2", f7),
+    8: ("x^2", f8),
 }
