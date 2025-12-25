@@ -11,6 +11,7 @@ from sympy.parsing.sympy_parser import (
 from src.golden_section import golden_section_root
 from src import functions
 
+# Символьная переменная для разбора выражений
 _X = Symbol("x")
 _ALLOWED_LOCALS = {
     "x": _X,
@@ -24,10 +25,12 @@ _ALLOWED_LOCALS = {
     "exp": exp,
     "abs": Abs,
 }
+# Дополнительные преобразования парсера (xor как степень)
 _TRANSFORMATIONS = standard_transformations + (convert_xor,)
 
 
 def read_float(prompt: str, default: float | None = None) -> float:
+    # Повторяем ввод, пока не получим корректное число
     while True:
         raw = input(prompt)
         if raw == "" and default is not None:
@@ -39,6 +42,7 @@ def read_float(prompt: str, default: float | None = None) -> float:
 
 
 def parse_user_function(expression: str) -> Callable[[float], float]:
+    # Парсим пользовательское выражение с ограниченным набором функций
     try:
         parsed = parse_expr(
             expression,
@@ -52,6 +56,7 @@ def parse_user_function(expression: str) -> Callable[[float], float]:
     if parsed.free_symbols - {_X}:
         raise ValueError("используйте только переменную x")
 
+    # Компилируем символьное выражение в функцию Python
     compiled = lambdify(_X, parsed, modules=[{"Abs": abs}, "math"])
 
     def f(x_val: float) -> float:
@@ -61,6 +66,7 @@ def parse_user_function(expression: str) -> Callable[[float], float]:
 
 
 def read_user_function() -> Callable[[float], float]:
+    # Ввод выражения с проверкой синтаксиса
     print("Можно использовать: sin, cos, tan, log, sqrt, exp, abs, pi, e")
     while True:
         expr = input("Введите выражение от x: ").strip()
@@ -74,6 +80,7 @@ def read_user_function() -> Callable[[float], float]:
 
 
 def choose_function() -> Callable[[float], float]:
+    # Меню выбора предопределенной функции или ввода своей
     print("Доступные функции:")
     for i, (desc, _) in functions.FUNCTIONS.items():
         print(f"{i}. f(x) = {desc}")
@@ -103,6 +110,7 @@ def main() -> None:
     f = choose_function()
     eps_x = read_float("Введите точность по x [по умолчанию 1e-6]: ", default=1e-6)
 
+    # Запрашиваем интервал, пока метод не отработает без ошибки
     while True:
         a = read_float("Введите левую границу a: ")
         b = read_float("Введите правую границу b: ")
